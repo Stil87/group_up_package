@@ -8,7 +8,8 @@
  * @format
  */
 
-import React from 'react';
+import { isTemplateElement } from '@babel/types';
+import React, { ReactComponentElement } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -21,6 +22,9 @@ import {
   TouchableHighlight,
   Dimensions,
   Animated,
+  Pressable,
+  ListRenderItem,
+  PressableProps,
 } from 'react-native';
 
 import {
@@ -31,162 +35,136 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-interface item { title: string, id: number }
+interface CustomListItem { title: string, id: number }
 
-const Data: {}[] = [
-  { title: "hello" },
-  { title: "bye" },
-  { title: "love" },
-  { title: "Donald" },
+const Data: CustomListItem[] = [
+  { title: "hello", id: 1 },
+  { title: "bye", id: 2 },
+  { title: "love", id: 3 },
+  { title: "Donald", id: 4 },
 ]
+const DataTwo: CustomListItem[] = [
+  { title: "Andrew", id: 1 },
+  { title: "Berta", id: 2 },
 
-declare const global: { HermesInternal: null | {} };
+]
+let ScreenHeight = Dimensions.get("window").height;
+
+/* class ListItem extends React.Component {
+
+constructor (listItem) {
+  super()
+}
+
+  render() {
+    return (
+      <Pressable
+
+
+      onLayout={(event) => {
+        let { x, y, width, height } = event.nativeEvent.layout
+        console.log(listItem.title, x, y)
+      }}
+
+    >
+      <View style={styles.listItemContainerStyle}
+      >
+        <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
+      </View>
+    </Pressable>
+
+    )
+  };
+} */
 
 
 
-const App = () => {
+const getListItem = (listItem: CustomListItem, index: number,): any => {
 
-  let animation = new Animated.Value(1)
-  let movingAnimation = new Animated.Value(0)
-  let backgroundAnimation = new Animated.Value(0)
 
-  const backgroundAnimationInterpolation =
-    backgroundAnimation.interpolate({
-      inputRange: [0, 100],
-      outputRange: ["rgb(255,99,71)", "rgb(99,71,255)"]
-    })
-  const backgroundStyle = {
-    backgroundColor: backgroundAnimationInterpolation
-  }
-  const animatedStyle = {
-    opacity: animation,
-    transform: [
-      {
-        translateY: movingAnimation,
-      },
-      /*   {
-  
-          translateX: movingAnimation
-        } */
-    ]
-  }
-
-  function onPress(item: item) {
-    console.log('just clicked :', item.id)
-    //animation.addListener(value => console.log(value))
-    Animated.timing(animation, {
-      useNativeDriver: false,
-      toValue: 0.5,
-      duration: 500
-    }).start()
-    Animated.timing(movingAnimation, {
-      useNativeDriver: false,
-      toValue: -300,
-      duration: 5000
-
-    }).start()
-  }
 
   return (
+    <Pressable
+      
 
-    <View 
-    
-   /*  style={
 
-      [
-        { flexDirection: "row" }
-        , { flex: 1 }]
+    onPress={(event) => {
+      let x  = event.nativeEvent.locationX
+      console.log(x)
+    }}
 
-    } */
+    >
+      <View style={styles.listItemContainerStyle}
+      >
+        <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
+      </View>
+    </Pressable>
+
+  )
+}
+/* 
+const getItemPosition = (item:) =>{
+
+
+}
+ */
+const App = () => {
+
+
+
+  return (<View>
+    <SafeAreaView
+      style={[{ backgroundColor: "green" }, { flexDirection: "column" }, { height: ScreenHeight }]}
+
     >
 
+      <FlatList
+       
 
-      <Animated.FlatList
-        scrollEventThrottle={16}
-        onScroll={Animated.event([
-
-          {
-            nativeEvent: {
-              contentOffset: {
-                x: backgroundAnimation
-              }
-            }
-          },
-
-
-        ], { useNativeDriver: false })}
-        keyExtractor={(item) => item.id.toString()}
-        style={[{ alignSelf: "flex-end" }, { backgroundColor: "black" }]}
+        style={[, { backgroundColor: "yellow" }]}
         horizontal
-        data={[
-          { title: "Hello", id: 1 },
-          { title: "no", id: 2 },
-          { title: "oh", id: 3 },
-          { title: "yeah", id: 4 }
-        ]}
-        renderItem={({ item }) => (
-          <TouchableHighlight
-            style={[{ backgroundColor: Colors.green }, ]}
-            key={item.id.toString()}
-            onPress={() => onPress(item)}
-          >
+        data={Data}
+        CellRendererComponent={({ item, index }) => {
 
 
-            <Animated.View style={[{ margin: 24 },
-              backgroundStyle,
-            { borderColor: "blue" },
-              animatedStyle,
-             //, { position: 'absolute' }, {top:20}, {left:20}
-              ]}>
-              <Text style={[{ fontSize: 32 }, { color: Colors.white }]}>{item.title}</Text>
-            </Animated.View>
-          </TouchableHighlight>
-        )}
-      />
+
+          return getListItem(item, index)
+        }
+
+        }
+        keyExtractor={(item, index) => index.toString()}
+      ></FlatList>
+      <View></View>
+      <FlatList
+        style={[{ backgroundColor: "yellow" }]}
+        horizontal
+        data={DataTwo}
+        renderItem={({ item, index }) => getListItem(item, index)}
+        keyExtractor={(item, index) => index.toString()}
+      ></FlatList>
 
 
-    </View>
-  );
+    </SafeAreaView>
+
+  </View>);
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  listItemContainerStyle: {
+    height: 60,
+    width: 60,
+    borderRadius: 50,
+    backgroundColor: "blue",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
 
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+  listItemTextStyle: {
+    fontSize: 15,
+    color: "white"
+
+  }
 });
 
 export default App;
