@@ -9,7 +9,7 @@
  */
 
 import { isTemplateElement } from '@babel/types';
-import React, { ReactComponentElement } from 'react';
+import React, { ReactComponentElement, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -36,6 +36,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 interface CustomListItem { title: string, id: number }
+interface ClonePosition { x: number, y: number }
 
 const Data: CustomListItem[] = [
   { title: "hello", id: 1 },
@@ -46,80 +47,83 @@ const Data: CustomListItem[] = [
 const DataTwo: CustomListItem[] = [
   { title: "Andrew", id: 1 },
   { title: "Berta", id: 2 },
+  { title: "leo", id: 3 },
 
 ]
 let ScreenHeight = Dimensions.get("window").height;
 
-/* class ListItem extends React.Component {
+const initialElem: React.DetailedReactHTMLElement<{ style: any }, any>[] = []
 
-constructor (listItem) {
-  super()
+
+
+
+
+
+
+
+
+
+/* 
+const getItemPosition = (item:) =>{
+  
+  
 }
+*/
+const App = () => {
+  const [cloneArray, setCloneArray] = useState(initialElem)
 
-  render() {
+  const getListItem = (listItem: CustomListItem,): any => {
+
+
+
     return (
       <Pressable
 
+        style={styles.listItemContainerStyle}
 
-      onLayout={(event) => {
-        let { x, y, width, height } = event.nativeEvent.layout
-        console.log(listItem.title, x, y)
-      }}
 
-    >
-      <View style={styles.listItemContainerStyle}
+        onPress={(event) => {
+          
+          let x = event.nativeEvent.locationX
+          let y = event.nativeEvent.locationY
+          // let y = event.currentTarget.getBo
+          console.log(x, y)
+          addItemToCloneArray(listItem, { x, y })
+
+
+        }}
+
       >
-        <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
-      </View>
-    </Pressable>
+        <View
+        >
+          <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
+        </View>
+      </Pressable>
 
     )
-  };
-} */
+  }
 
+  const addItemToCloneArray = (listItem: CustomListItem, clonePosition: ClonePosition) => {
+    const cloneListItem = getListItem(listItem)
+    console.log('cloneList', cloneListItem)
+    const clone = React.cloneElement(cloneListItem,
+      { style: { position: "absolute", top: clonePosition.y, left: clonePosition.x, backgroundColor: "red" } })
+    /*  const clone = React.cloneElement(cloneListItem,
+       { className ="hero" }) */
+    console.log('clone', clone)
 
-
-const getListItem = (listItem: CustomListItem, index: number,): any => {
-
-
-
-  return (
-    <Pressable
-      
-
-
-    onPress={(event) => {
-      let x  = event.nativeEvent.locationX
-      console.log(x)
-    }}
-
-    >
-      <View style={styles.listItemContainerStyle}
-      >
-        <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
-      </View>
-    </Pressable>
-
-  )
-}
-/* 
-const getItemPosition = (item:) =>{
-
-
-}
- */
-const App = () => {
-
+    setCloneArray([clone])
+  }
 
 
   return (<View>
     <SafeAreaView
       style={[{ backgroundColor: "green" }, { flexDirection: "column" }, { height: ScreenHeight }]}
-
     >
 
+
       <FlatList
-       
+
 
         style={[, { backgroundColor: "yellow" }]}
         horizontal
@@ -128,7 +132,7 @@ const App = () => {
 
 
 
-          return getListItem(item, index)
+          return getListItem(item)
         }
 
         }
@@ -139,10 +143,10 @@ const App = () => {
         style={[{ backgroundColor: "yellow" }]}
         horizontal
         data={DataTwo}
-        renderItem={({ item, index }) => getListItem(item, index)}
+        renderItem={({ item, index }) => getListItem(item)}
         keyExtractor={(item, index) => index.toString()}
       ></FlatList>
-
+      <View>{cloneArray.map(el => <>{el}</>)}</View>
 
     </SafeAreaView>
 
