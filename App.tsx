@@ -70,6 +70,8 @@ class App extends React.Component {
 
 
   state = {
+  point : new Animated.ValueXY(),
+
     currentItem: null,
     draggingIndex: -1,
     hidden: true,
@@ -88,7 +90,6 @@ class App extends React.Component {
   }
 
   _panResponder: PanResponderInstance
-  point = new Animated.ValueXY()
   Flight = new Animated.ValueXY()
   scrollOffSet = 0;
   flatListLayoutOffset = 0
@@ -125,8 +126,8 @@ class App extends React.Component {
         // console.log(this.currentIndex, 'current Item')
         
         Animated.event([{
-          y: this.point.y,
-           x: this.point.x
+          y: this.state.point.y,
+           x: this.state.point.x
         }], { useNativeDriver: false })({
           y: gestureState.y0-this.listItemHeight/2,
 
@@ -139,8 +140,8 @@ class App extends React.Component {
       },
       onPanResponderMove: (evt, gestureState) => {
         Animated.event([{
-          y: this.point.y,
-           x: this.point.x
+          y: this.state.point.y,
+           x: this.state.point.x
         }], { useNativeDriver: false })({
           y: gestureState.moveY-this.listItemHeight/2,
 
@@ -212,8 +213,8 @@ class App extends React.Component {
       >
         {!hidden && <Animated.View style={{
           backgroundColor: "black", zIndex: 2, position: "absolute",
-          top: this.point.getLayout().top,
-          left: this.point.getLayout().left
+          top: this.state.point.getLayout().top,
+          left: this.state.point.getLayout().left
         }}>
           {getListItem({ item: this.state.currentItem})}
         </Animated.View>}
