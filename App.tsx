@@ -66,14 +66,29 @@ const getItemPosition = (item:) =>{
   
 }
 */
+interface AppState {
+  point: Animated.ValueXY,
+  flightY: Animated.Value,
+  draggingIndex: number,
+  currentItem: CustomListItem,
+  hidden:boolean,
+  dragging:boolean,
+  DataTwo:CustomListItem[]
+  DataThree:CustomListItem[]
+
+
+
+    
+}
+
 class App extends React.Component {
 
 
-  state = {
+  state: AppState = {
     point: new Animated.ValueXY(),
     flightY: new Animated.Value(0),
 
-    currentItem: null,
+    currentItem:  { title: 'hello', id: 1 },
     draggingIndex: -1,
     hidden: true,
     dragging: false,
@@ -87,7 +102,9 @@ class App extends React.Component {
       { title: "till", id: 7 },
       { title: "tobi", id: 8 },
 
-    ]
+    ],
+    DataThree: [  { title: "Andrew", id: 1 }]
+    
   }
 
   _panResponder: PanResponderInstance
@@ -149,6 +166,7 @@ class App extends React.Component {
           x: gestureState.moveX - this.listItemWidth / 2
         })
 
+        console.log(gestureState.moveY, 'gesture State Release')
         // console.log(gestureState.x0, 'hello')
         // The most recent move distance is gestureState.move{X,Y}
         // The accumulated gesture distance since becoming responder is
@@ -160,14 +178,19 @@ class App extends React.Component {
         // The user has released all touches while this view is the
         // responder. This typically means a gesture has succeeded
         // console.log(gestureState.x0)
-        Animated.timing(this.state.point.y, { toValue: -300, duration: 1500, useNativeDriver: false }).start()
+        console.log(this.state.DataThree, 'datathree')
+        const currentItemSave = this.state.DataTwo[this.currentIndex]
+        console.log(currentItemSave, 'CURRENTITEMSAVE')
+        Animated.timing(this.state.point.y, { toValue: -300, duration: 1500, useNativeDriver: false }).start(() => {
+          this.setState({ DataThree: [...this.state.DataThree, currentItemSave ]})
+          console.log(this.state.DataThree, 'datathreeAFter')
+        })
         const myArray = this.state.DataTwo
-        
+
         if (this.currentIndex > -1) {
           myArray.splice(this.currentIndex, 1);
         }
-        this.setState({DataTwo: myArray})
-        console.log(this.state.DataTwo.length, 'data length')
+        this.setState({ DataTwo: myArray, draggingIndex: -1 })
       },
       onPanResponderTerminate: (evt, gestureState) => {
         // Another component has become the responder, so this gesture
@@ -202,8 +225,8 @@ class App extends React.Component {
           {...this._panResponder.panHandlers}
 
 
-          style={[styles.listItemContainerStyle, 
-            { opacity: draggingIndex === index ? 0 : 1 }
+          style={[styles.listItemContainerStyle,
+          { opacity: draggingIndex === index ? 0 : 1 }
           ]}
         // {...console.log(item.title)}
         >
@@ -218,8 +241,18 @@ class App extends React.Component {
 
     return (
       <View
-        style={{ flex: 1, flexDirection: "row" }}
+        style={{ height: "100%", flexDirection: "column", justifyContent: "space-between" }}
       >
+        <FlatList
+          horizontal
+          data={this.state.DataThree}
+          renderItem={({ item, index }) => getListItem({ item }, index)}
+          style={{ backgroundColor: "yellow", flexGrow: 0, alignSelf: "flex-start", width: "100%" }}
+          keyExtractor={(item, index) => index.toString()}
+
+
+
+        ></FlatList>
         {!hidden && <Animated.View style={{
           backgroundColor: "black", zIndex: 2, position: "absolute",
           top: this.state.point.getLayout().top,
@@ -230,6 +263,7 @@ class App extends React.Component {
         <FlatList
           //scrollEnabled={!dragging}
           scrollEventThrottle={16}
+          // contentContainerStyle={{justifyContent:"center", flexDirection:"row"}}
 
           style={{ backgroundColor: "yellow", flexGrow: 0, alignSelf: "flex-end", width: "100%" }}
           horizontal
