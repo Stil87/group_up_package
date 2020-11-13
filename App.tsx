@@ -25,6 +25,8 @@ import {
   Pressable,
   ListRenderItem,
   PressableProps,
+  PanResponder,
+  PanResponderInstance,
 } from 'react-native';
 
 import {
@@ -44,12 +46,7 @@ const Data: CustomListItem[] = [
   { title: "love", id: 3 },
   { title: "Donald", id: 4 },
 ]
-const DataTwo: CustomListItem[] = [
-  { title: "Andrew", id: 1 },
-  { title: "Berta", id: 2 },
-  { title: "leo", id: 3 },
 
-]
 let ScreenHeight = Dimensions.get("window").height;
 
 const initialElem: React.DetailedReactHTMLElement<{ style: any }, any>[] = []
@@ -69,89 +66,143 @@ const getItemPosition = (item:) =>{
   
 }
 */
-const App = () => {
-  const [cloneArray, setCloneArray] = useState(initialElem)
+class App extends React.Component {
 
-  const getListItem = (listItem: CustomListItem,): any => {
 
+  state = {
+    hidden: true,
+    dragging: false,
+    DataTwo: [
+      { title: "Andrew", id: 1 },
+      { title: "Berta", id: 2 },
+      { title: "leo", id: 3 },
+      { title: "jo cock", id: 4 },
+      { title: "steve", id: 5 },
+      { title: "inna", id: 6 },
+      { title: "till", id: 7 },
+      { title: "tobi", id: 8 },
+
+    ]
+  }
+
+  _panResponder: PanResponderInstance
+  point = new Animated.ValueXY()
+  scrollOffSet = 0;
+  flatListLayout = {}
+
+  // size = new Animated.Value()
+
+  constructor(props: {} | Readonly<{}>) {
+    super(props)
+
+    this._panResponder = PanResponder.create({
+      // Ask to be the responder:
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) =>
+        true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
+        true,
+
+      onPanResponderGrant: (evt, gestureState) => {
+        this.setState({ dragging: true })
+        console.log(gestureState.x0)
+        this.setState({ hidden: false })
+
+        // The gesture has started. Show visual feedback so the user knows
+        // what is happening!
+        // gestureState.d{x,y} will be set to zero now
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        Animated.event([{
+          y: this.point.y,
+          x: this.point.x
+        }], { useNativeDriver: false })({
+          y: gestureState.moveY
+          , x: gestureState.moveX
+        })
+        // console.log(gestureState.x0, 'hello')
+        // The most recent move distance is gestureState.move{X,Y}
+        // The accumulated gesture distance since becoming responder is
+        // gestureState.d{x,y}
+      },
+      onPanResponderTerminationRequest: (evt, gestureState) =>
+        false,
+      onPanResponderRelease: (evt, gestureState) => {
+        // The user has released all touches while this view is the
+        // responder. This typically means a gesture has succeeded
+        // console.log(gestureState.x0)
+      },
+      onPanResponderTerminate: (evt, gestureState) => {
+        // Another component has become the responder, so this gesture
+        // should be cancelled
+      },
+      onShouldBlockNativeResponder: (evt, gestureState) => {
+        // Returns whether this component should block native components from becoming the JS
+        // responder. Returns true by default. Is currently only supported on android.
+        return true;
+      }
+    })
+  }
+
+
+
+
+  render() {
+    const { DataTwo, dragging, hidden } = this.state;
+
+    const getListItem = ({ item }: any) =>
+      (
+        <View
+
+          style={styles.listItemContainerStyle}
+          {...this._panResponder.panHandlers}
+        // {...console.log(item.title)}
+        >
+          <View
+          >
+            <Text style={styles.listItemTextStyle}>{item.title}</Text>
+          </View>
+        </View>
+
+      )
 
 
     return (
-      <Pressable
-
-        style={styles.listItemContainerStyle}
-
-
-        onPress={(event) => {
-          
-          let x = event.nativeEvent.locationX
-          let y = event.nativeEvent.locationY
-          // let y = event.currentTarget.getBo
-          console.log(x, y)
-          addItemToCloneArray(listItem, { x, y })
-
-
-        }}
-
+      <View
+        style={{ flex: 1 , flexDirection:"row"}}
       >
-        <View
-        >
-          <Text style={styles.listItemTextStyle}>{listItem.title}</Text>
-        </View>
-      </Pressable>
+        {!hidden && <Animated.View style={{
+          backgroundColor: "black", zIndex: 2, width: 30, position: "absolute",
+          top: this.point.getLayout().top,
+          left: this.point.getLayout().left
+        }}>
+          {getListItem({ item: 3 })}
+        </Animated.View>}
+        <FlatList
+          //scrollEnabled={!dragging}
+          scrollEventThrottle={16}
 
-    )
+          style={{ backgroundColor: "yellow", flexGrow: 0 , alignSelf:"flex-end"}}
+          horizontal
+          onScroll={e => this.scrollOffSet = e.nativeEvent.contentOffset.x}
+          onLayout={e => this.flatListLayout
+            = (e.nativeEvent.layout)}
+          data={DataTwo}
+          renderItem={({ item, index }) => getListItem({ item })}
+          keyExtractor={(item, index) => index.toString()}
+        ></FlatList>
+
+      </View>);
   }
-
-  const addItemToCloneArray = (listItem: CustomListItem, clonePosition: ClonePosition) => {
-    const cloneListItem = getListItem(listItem)
-    console.log('cloneList', cloneListItem)
-    const clone = React.cloneElement(cloneListItem,
-      { style: { position: "absolute", top: clonePosition.y, left: clonePosition.x, backgroundColor: "red" } })
-    /*  const clone = React.cloneElement(cloneListItem,
-       { className ="hero" }) */
-    console.log('clone', clone)
-
-    setCloneArray([clone])
-  }
-
-
-  return (<View>
-    <SafeAreaView
-      style={[{ backgroundColor: "green" }, { flexDirection: "column" }, { height: ScreenHeight }]}
-    >
-
-
-      <FlatList
-
-
-        style={[, { backgroundColor: "yellow" }]}
-        horizontal
-        data={Data}
-        CellRendererComponent={({ item, index }) => {
-
-
-
-          return getListItem(item)
-        }
-
-        }
-        keyExtractor={(item, index) => index.toString()}
-      ></FlatList>
-      <View></View>
-      <FlatList
-        style={[{ backgroundColor: "yellow" }]}
-        horizontal
-        data={DataTwo}
-        renderItem={({ item, index }) => getListItem(item)}
-        keyExtractor={(item, index) => index.toString()}
-      ></FlatList>
-      <View>{cloneArray.map(el => <>{el}</>)}</View>
-
-    </SafeAreaView>
-
-  </View>);
 };
+
+
+
+
+
+
+
 
 const styles = StyleSheet.create({
   listItemContainerStyle: {
