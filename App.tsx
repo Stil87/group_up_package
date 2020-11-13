@@ -70,6 +70,8 @@ class App extends React.Component {
 
 
   state = {
+    currentItem: null,
+    draggingIndex: -1,
     hidden: true,
     dragging: false,
     DataTwo: [
@@ -87,8 +89,12 @@ class App extends React.Component {
 
   _panResponder: PanResponderInstance
   point = new Animated.ValueXY()
+  Flight = new Animated.ValueXY()
   scrollOffSet = 0;
-  flatListLayout = {}
+  flatListLayoutOffset = 0
+  listItemHeight = 0
+  listItemWidth = 0
+  currentIndex = -1;
 
   // size = new Animated.Value()
 
@@ -105,9 +111,27 @@ class App extends React.Component {
         true,
 
       onPanResponderGrant: (evt, gestureState) => {
-        this.setState({ dragging: true })
-        console.log(gestureState.x0)
+        console.log(this.listItemHeight, 'itemheight')
         this.setState({ hidden: false })
+        this.setState({ dragging: true })
+        this.currentIndex =this.xToIndex(gestureState.x0)
+        this.setState({ draggingIndex: this.currentIndex })
+        
+        // console.log(this.currentIndex, 'current Index')
+        this.setState({currentItem: this.state.DataTwo[this.currentIndex]})
+        console.log(gestureState.x0, 'Gesture x0 mouse exact')
+        console.log(gestureState.y0, 'Gesture y0 mouse exact')
+        // console.log(this.currentIndex, 'current Item')
+        // console.log(this.currentIndex, 'current Item')
+        
+        Animated.event([{
+          y: this.point.y,
+           x: this.point.x
+        }], { useNativeDriver: false })({
+          y: gestureState.y0-this.listItemHeight/2,
+
+          x: gestureState.x0-this.listItemWidth/2
+        })
 
         // The gesture has started. Show visual feedback so the user knows
         // what is happening!
@@ -116,11 +140,13 @@ class App extends React.Component {
       onPanResponderMove: (evt, gestureState) => {
         Animated.event([{
           y: this.point.y,
-          x: this.point.x
+           x: this.point.x
         }], { useNativeDriver: false })({
-          y: gestureState.moveY
-          , x: gestureState.moveX
+          y: gestureState.moveY-this.listItemHeight/2,
+
+          x: gestureState.moveX-this.listItemWidth/2
         })
+
         // console.log(gestureState.x0, 'hello')
         // The most recent move distance is gestureState.move{X,Y}
         // The accumulated gesture distance since becoming responder is
@@ -144,19 +170,31 @@ class App extends React.Component {
       }
     })
   }
+/* 
+  startFlightAnimation = () => {
+    Animated.timing()
+
+  } */
+
+  xToIndex= (x:number) => Math.floor( (this.scrollOffSet+ x-this.flatListLayoutOffset)/this.listItemWidth)
 
 
 
 
   render() {
-    const { DataTwo, dragging, hidden } = this.state;
+    const { DataTwo, dragging, hidden , draggingIndex} = this.state;
 
-    const getListItem = ({ item }: any) =>
+    const getListItem = ({ item }: any , index:number) =>
       (
         <View
+        onLayout={e => {
+          this.listItemHeight = e.nativeEvent.layout.height
+          this.listItemWidth = e.nativeEvent.layout.width
+        }}
+        {...this._panResponder.panHandlers}
 
-          style={styles.listItemContainerStyle}
-          {...this._panResponder.panHandlers}
+
+          style={[styles.listItemContainerStyle , {opacity: draggingIndex === index ? 0:1}]}
         // {...console.log(item.title)}
         >
           <View
@@ -170,26 +208,26 @@ class App extends React.Component {
 
     return (
       <View
-        style={{ flex: 1 , flexDirection:"row"}}
+        style={{ flex: 1, flexDirection: "row" }}
       >
         {!hidden && <Animated.View style={{
-          backgroundColor: "black", zIndex: 2, width: 30, position: "absolute",
+          backgroundColor: "black", zIndex: 2, position: "absolute",
           top: this.point.getLayout().top,
           left: this.point.getLayout().left
         }}>
-          {getListItem({ item: 3 })}
+          {getListItem({ item: this.state.currentItem})}
         </Animated.View>}
         <FlatList
           //scrollEnabled={!dragging}
           scrollEventThrottle={16}
 
-          style={{ backgroundColor: "yellow", flexGrow: 0 , alignSelf:"flex-end"}}
+          style={{ backgroundColor: "yellow", flexGrow: 0, alignSelf: "flex-end" , width:"100%"}}
           horizontal
           onScroll={e => this.scrollOffSet = e.nativeEvent.contentOffset.x}
-          onLayout={e => this.flatListLayout
-            = (e.nativeEvent.layout)}
+          onLayout={e => this.flatListLayoutOffset
+            = (e.nativeEvent.layout.x)}
           data={DataTwo}
-          renderItem={({ item, index }) => getListItem({ item })}
+          renderItem={({ item, index }) => getListItem({ item }, index)}
           keyExtractor={(item, index) => index.toString()}
         ></FlatList>
 
@@ -212,7 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: "blue",
     justifyContent: "center",
     alignItems: "center",
-    margin: 10,
+    margin: 0,
 
   },
   listItemTextStyle: {
