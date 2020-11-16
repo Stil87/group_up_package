@@ -10,6 +10,7 @@
 
 import { isTemplateElement } from '@babel/types';
 import React, { ReactComponentElement, useState } from 'react';
+import SourceList from './components/Grouper'
 import {
   SafeAreaView,
   StyleSheet,
@@ -51,7 +52,12 @@ let ScreenHeight = Dimensions.get("window").height;
 
 const initialElem: React.DetailedReactHTMLElement<{ style: any }, any>[] = []
 
-
+const testDate: Array<{}> = [
+  { title: "no", id: 6 },
+  { title: "what", id: 7 },
+  { title: "is ", id: 8 },
+  { title: "here", id: 9 },
+]
 
 
 
@@ -71,15 +77,17 @@ interface AppState {
   flightY: Animated.Value,
   draggingIndex: number,
   currentItem: CustomListItem,
-  hidden:boolean,
-  dragging:boolean,
-  DataTwo:CustomListItem[]
-  DataThree:CustomListItem[]
+  hidden: boolean,
+  dragging: boolean,
+  DataTwo: CustomListItem[]
+  DataThree: CustomListItem[]
 
 
 
-    
+
 }
+
+// const grouper = new Grouper({sourceList: testDate}); ///_____-------------------
 
 class App extends React.Component {
 
@@ -88,7 +96,7 @@ class App extends React.Component {
     point: new Animated.ValueXY(),
     flightY: new Animated.Value(0),
 
-    currentItem:  { title: 'hello', id: 1 },
+    currentItem: { title: 'hello', id: 1 },
     draggingIndex: -1,
     hidden: true,
     dragging: false,
@@ -103,8 +111,8 @@ class App extends React.Component {
       { title: "tobi", id: 8 },
 
     ],
-    DataThree: [  { title: "Andrew", id: 1 }]
-    
+    DataThree: [{ title: "Andrew", id: 1 }]
+
   }
 
   _panResponder: PanResponderInstance
@@ -182,7 +190,7 @@ class App extends React.Component {
         const currentItemSave = this.state.DataTwo[this.currentIndex]
         console.log(currentItemSave, 'CURRENTITEMSAVE')
         Animated.timing(this.state.point.y, { toValue: -300, duration: 1500, useNativeDriver: false }).start(() => {
-          this.setState({ DataThree: [...this.state.DataThree, currentItemSave ]})
+          this.setState({ DataThree: [...this.state.DataThree, currentItemSave] })
           console.log(this.state.DataThree, 'datathreeAFter')
         })
         const myArray = this.state.DataTwo
@@ -240,42 +248,60 @@ class App extends React.Component {
 
 
     return (
-      <View
-        style={{ height: "100%", flexDirection: "column", justifyContent: "space-between" }}
-      >
-        <FlatList
+      
+<SafeAreaView>
+
+        <View
+          style={{ height: "100%", flexDirection: "column", justifyContent: "flex-end" ,position:"relative"}}
+        >
+          
+
+
+            <SourceList
+            
+              sourceList={testDate}
+              horizontal={true}
+              // styles={}
+              ></SourceList>
+ 
+              
+
+           {/*  <FlatList
           horizontal
           data={this.state.DataThree}
           renderItem={({ item, index }) => getListItem({ item }, index)}
           style={{ backgroundColor: "yellow", flexGrow: 0, alignSelf: "flex-start", width: "100%" }}
           keyExtractor={(item, index) => index.toString()}
-
-
-
-        ></FlatList>
-        {!hidden && <Animated.View style={{
-          backgroundColor: "black", zIndex: 2, position: "absolute",
-          top: this.state.point.getLayout().top,
-          left: this.state.point.getLayout().left
-        }}>
+          
+          
+          
+          ></FlatList>
+          {!hidden && <Animated.View style={{
+            backgroundColor: "black", zIndex: 2, position: "absolute",
+            top: this.state.point.getLayout().top,
+            left: this.state.point.getLayout().left
+          }}>
           {getListItem({ item: this.state.currentItem })}
-        </Animated.View>}
-        <FlatList
+          </Animated.View>}
+          <FlatList
           //scrollEnabled={!dragging}
           scrollEventThrottle={16}
           // contentContainerStyle={{justifyContent:"center", flexDirection:"row"}}
-
+          
           style={{ backgroundColor: "yellow", flexGrow: 0, alignSelf: "flex-end", width: "100%" }}
           horizontal
           onScroll={e => this.scrollOffSet = e.nativeEvent.contentOffset.x}
           onLayout={e => this.flatListLayoutOffset
             = (e.nativeEvent.layout.x)}
-          data={this.state.DataTwo}
-          renderItem={({ item, index }) => getListItem({ item }, index)}
-          keyExtractor={(item, index) => index.toString()}
-        ></FlatList>
+            data={this.state.DataTwo}
+            renderItem={({ item, index }) => getListItem({ item }, index)}
+            keyExtractor={(item, index) => index.toString()}
+          ></FlatList>
+ */}
+        </View>
+</SafeAreaView>
 
-      </View>);
+    );
   }
 };
 
