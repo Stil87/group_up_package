@@ -1,5 +1,5 @@
 import React from "react";
-import {SafeAreaView, View} from 'react-native';
+import {Image, SafeAreaView, Text, View} from 'react-native';
 import {Grouper, SourceList, TargetList} from './components/Grouper';
 
 const testDate: Array<{}> = [
@@ -48,7 +48,12 @@ const APP = () => {
         }}>
         <Grouper>
           <TargetList></TargetList>
-          <View style={{backgroundColor: 'black', height: '80%'}}></View>
+          <View style={{backgroundColor: 'black', height: '80%'}}>
+            <Image
+              style={{height: '100%', width: '100%'}}
+              source={require('./assests/friends.jpg')}
+            />
+          </View>
           <SourceList sourceListProp={testDate} horizontal={true}></SourceList>
         </Grouper>
       </View>
