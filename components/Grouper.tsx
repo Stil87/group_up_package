@@ -74,15 +74,15 @@ const TargetList = ({targetListGrouper, sendLocation}) => {
     return (
       <View
         style={{
-          height: 60,
-          width: 60,
-          borderRadius: 58,
+          height: 80,
+          width: 80,
+          borderRadius: 78,
           backgroundColor: "blue",
           justifyContent: "center",
           alignItems: "center",
           margin: 0,
         }}>
-        <Image style={{width: 53, height: 53, borderRadius:53}} source={{uri: item.id}}></Image>
+        <Image style={{width: 73, height: 73, borderRadius:73}} source={{uri: item.id}}></Image>
       </View>
     )
 
@@ -218,7 +218,7 @@ const SourceList = (props: any) => {
         }).start(() => {
           Animated.timing(animatedItemPoint, {
             toValue: {
-              y: sourceListLocation + 40 - targetListLocation,
+              y: sourceListLocation +5 - targetListLocation,
               x: counter * listItemWidth,
             },
             duration: 500,
@@ -265,15 +265,15 @@ const SourceList = (props: any) => {
         {...panResponder.panHandlers}
         style={{
           opacity: draggingIndex === index ? 0 : 1,
-          height: 60,
-          width: 60,
-          borderRadius: 50,
+          height: 80,
+          width: 80,
+          borderRadius: 70,
           backgroundColor: "blue",
           justifyContent: "center",
           alignItems: "center",
           margin: 0,
         }}>
-        <Image style={{width: 53, height: 53, borderRadius:53}} source={{uri: item.id}}></Image>
+        <Image style={{width: 73, height: 73, borderRadius:73}} source={{uri: item.id}}></Image>
       </View>
     );
   };
@@ -301,8 +301,8 @@ const SourceList = (props: any) => {
             left: animatedItemPoint.getLayout().left,
             zIndex: 2,
             position: 'absolute',
-            height: 60,
-            width: 60,
+            height: 80,
+            width: 80,
             borderRadius: 50,
             backgroundColor: 'blue',
 
