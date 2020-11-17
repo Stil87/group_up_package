@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useRef, useEffect} from 'react';
 import {
   Animated,
   Dimensions,
   FlatList,
+  Image,
   PanResponder,
   PanResponderInstance,
   PointPropType,
@@ -39,13 +41,15 @@ const Grouper = (props) => {
     <>
       {[
         React.cloneElement(target, {
+          key: '0',
           setTargetListGrouper,
           targetListGrouper,
           sendLocation,
         }),
         ,
-        React.cloneElement(middle),
+        React.cloneElement(middle, {key: '1'}),
         React.cloneElement(source, {
+          key: '2',
           sendItems,
           settargetListLocation,
           targetListLocationProp,
@@ -56,12 +60,12 @@ const Grouper = (props) => {
 
 };
 
-const TargetList = ({ targetListGrouper, sendLocation }) => {
+const TargetList = ({targetListGrouper, sendLocation}) => {
   const [targetList, setTargetList] = useState(targetListGrouper);
   let location = 0;
   useEffect(() => {
     setTargetList((list) => [...targetListGrouper]);
-    return () => { };
+    return () => {};
   }, [targetListGrouper]);
 
   const getListItem = (item, index) => {
@@ -78,7 +82,7 @@ const TargetList = ({ targetListGrouper, sendLocation }) => {
           alignItems: "center",
           margin: 0,
         }}>
-        <Text>{item.title}</Text>
+        <Image style={{width: 50, height: 50, borderRadius:50}} source={{uri: item.id}}></Image>
       </View>
     )
 
@@ -89,11 +93,11 @@ const TargetList = ({ targetListGrouper, sendLocation }) => {
       <FlatList
         horizontal
         data={targetList}
-        renderItem={({ item, index }) => {
+        renderItem={({item, index}) => {
           return getListItem(item, index);
         }}
-        keyExtractor={(index) => index + 'Ab'}
-        style={{ flexGrow: 0, backgroundColor: 'yellow' }}
+        keyExtractor={(item, index) => index + ''}
+        style={{flexGrow: 0, backgroundColor: 'black'}}
         scrollEventThrottle={16}
         onLayout={(e) => {
           sendLocation(e.nativeEvent.layout.y);
@@ -101,8 +105,7 @@ const TargetList = ({ targetListGrouper, sendLocation }) => {
       />
     </>
   );
-}
-
+};
 
 const SourceList = (props: any) => {
   const {
@@ -111,7 +114,10 @@ const SourceList = (props: any) => {
     styles,
     sendItems,
     targetListLocationProp,
+    itemCreate,
   } = props;
+
+  console.log(itemCreate, '---------------------itemCreate');
 
   const [sourceList, setsourceList] = useState(sourceListProp);
   const [targetListLocation, settargetListLocation] = useState(
@@ -121,7 +127,7 @@ const SourceList = (props: any) => {
 
   useEffect(() => {
     settargetListLocation(targetListLocationProp);
-    return () => { };
+    return () => {};
   }, [targetListLocationProp])
 
 
@@ -137,7 +143,7 @@ const SourceList = (props: any) => {
   let scrollOffSet = 0;
   let flatListLayoutX = 0;
   let flatListLayoutY = 0;
-  let counter = 0
+  let counter = 0;
 
   // console.log(Dimensions.get('window').height)
 
@@ -170,7 +176,7 @@ const SourceList = (props: any) => {
               x: animatedItemPoint.x,
             },
           ],
-          { useNativeDriver: false },
+          {useNativeDriver: false},
         )({
           y: gestureState.y0 - 50 - listItemHeight / 2,
           x: gestureState.x0 - listItemWidth / 2,
@@ -187,16 +193,17 @@ const SourceList = (props: any) => {
               x: animatedItemPoint.x,
             },
           ],
-          { useNativeDriver: false },
+          {useNativeDriver: false},
         )({
           y: gestureState.moveY - 50 - listItemHeight / 2,
           x: gestureState.moveX - listItemWidth / 2,
         });
 
-        console.log(evt.nativeEvent.timestamp, 'here')
-        console.log(animatedItemPoint.getLayout().left, 'animated layout y release')
-
-
+        console.log(evt.nativeEvent.timestamp, 'here');
+        console.log(
+          animatedItemPoint.getLayout().left,
+          'animated layout y release',
+        );
       },
       onPanResponderTerminationRequest: (evt, gestureState) => false,
       onPanResponderRelease: (evt, gestureState) => {
@@ -206,18 +213,19 @@ const SourceList = (props: any) => {
 
         const currentItem = sourceList[currentItemIndex];
 
-
-
         Animated.decay(animatedItemPoint, {
           /*   toValue: sourceListLocation +60 - targetListLocation ,
            duration: 1000, */
 
           useNativeDriver: false,
-          velocity: { x: gestureState.vx, y: gestureState.vy },
+          velocity: {x: gestureState.vx, y: gestureState.vy},
           deceleration: 0.996,
         }).start(() => {
           Animated.timing(animatedItemPoint, {
-            toValue: { y: sourceListLocation + 40 - targetListLocation, x: counter * listItemWidth },
+            toValue: {
+              y: sourceListLocation + 40 - targetListLocation,
+              x: counter * listItemWidth,
+            },
             duration: 500,
             useNativeDriver: false,
           }).start(() => {
@@ -225,12 +233,10 @@ const SourceList = (props: any) => {
             sendItems(currentItem);
             sethidden(true);
             counter++;
-
-
           });
         });
 
-        console.log('after Animation should get to here')
+        console.log('after Animation should get to here');
 
         const newSourceList = sourceList;
         if (currentItemIndex > -1) {
@@ -238,8 +244,6 @@ const SourceList = (props: any) => {
         }
         setsourceList(newSourceList);
         setdraggingIndex(-1);
-
-
       },
       onPanResponderTerminate: (evt, gestureState) => {
         // Another component has become the responder, so this gesture
@@ -257,6 +261,7 @@ const SourceList = (props: any) => {
     Math.floor((scrollOffSet + x - flatListLayoutX) / listItemWidth);
 
   const getListItem = (item, index) => {
+    console.log(typeof item.id);
     return (
       <View
         onLayout={(e) => {
@@ -276,23 +281,21 @@ const SourceList = (props: any) => {
           alignItems: "center",
           margin: 0,
         }}>
-        <Text>{item.title}</Text>
+        <Image style={{width: 50, height: 50, borderRadius:50}} source={{uri: item.id}}></Image>
       </View>
-    )
-
+    );
   };
   return (
     <>
       <FlatList
         data={sourceList}
-        renderItem={({ item, index }) => getListItem(item, index)}
-        keyExtractor={(item) => item + ''}
+        renderItem={({item, index}) => getListItem(item, index)}
+        keyExtractor={(item, index) => index + ''}
         horizontal={horizontal}
-        style={{ flexGrow: 0, backgroundColor: 'green' }}
+        style={{flexGrow: 0, backgroundColor: 'black'}}
         scrollEventThrottle={16}
         onScroll={e => scrollOffSet = e.nativeEvent.contentOffset.x}
         onLayout={(e) => {
-          console.log(e.nativeEvent.layout.y, '---------sourceList----------');
           setSourceListLocation(e.nativeEvent.layout.y);
           flatListLayoutX = e.nativeEvent.layout.x;
           flatListLayoutY = e.nativeEvent.layout.y;
@@ -301,8 +304,6 @@ const SourceList = (props: any) => {
 
       {!hidden && (
         <Animated.View
-
-
           style={{
             top: animatedItemPoint.getLayout().top,
             left: animatedItemPoint.getLayout().left,
@@ -322,4 +323,4 @@ const SourceList = (props: any) => {
   );
 };
 
-export { SourceList, TargetList, Grouper };
+export {SourceList, TargetList, Grouper};

@@ -8,35 +8,23 @@
  * @format
  */
 
-import {isTemplateElement} from '@babel/types';
-import React, {ReactComponentElement, useState} from 'react';
-import {SourceList, TargetList, Grouper} from './components/Grouper';
+import { isTemplateElement } from '@babel/types';
+import React, { ReactComponentElement, useState } from 'react';
+import { SourceList, TargetList, Grouper } from './components/Grouper';
 import {
   SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
-  StatusBar,
-  TouchableOpacity,
-  FlatList,
-  TouchableHighlight,
+
   Dimensions,
   Animated,
-  Pressable,
-  ListRenderItem,
-  PressableProps,
+
   PanResponder,
   PanResponderInstance,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+
 
 interface CustomListItem {
   title: string;
@@ -48,26 +36,25 @@ interface ClonePosition {
 }
 
 const Data: CustomListItem[] = [
-  {title: 'hello', id: 1},
-  {title: 'bye', id: 2},
-  {title: 'love', id: 3},
-  {title: 'Donald', id: 4},
+  { title: 'hello', id: 1 },
+  { title: 'bye', id: 2 },
+  { title: 'love', id: 3 },
+  { title: 'Donald', id: 4 },
 ];
 
 let ScreenHeight = Dimensions.get("window").height;
 
-const initialElem: React.DetailedReactHTMLElement<{style: any}, any>[] = [];
+const initialElem: React.DetailedReactHTMLElement<{ style: any }, any>[] = [];
 
 const testDate: Array<{}> = [
-  {title: 'Andrew', id: 1},
-  {title: 'Berta', id: 2},
-  {title: 'leo', id: 3},
-  {title: 'jo cock', id: 4},
+  { title: 'Igor', id: "https://ca.slack-edge.com/T0WU5R8NT-U01A0HCC38Q-98e50b5ed662-512" },
+  { title: 'Lukas', id: "https://ca.slack-edge.com/T0WU5R8NT-U015DNJ53CM-2c37d28c0241-512" },
+  { title: 'Andrew', id: "https://ca.slack-edge.com/T0WU5R8NT-UREPE1AR2-d3cad052b4a2-512" },
+  { title: 'steve', id: "https://ca.slack-edge.com/T0WU5R8NT-U018DCLH4TG-ebb6b972770c-512" },
+  { title: 'Berta', id: "https://ca.slack-edge.com/T0WU5R8NT-UFCH43E4B-bf2eeac7c0fa-512" },
+  { title: 'till', id: "https://ca.slack-edge.com/T0WU5R8NT-U015FNL1RQF-87fa8c57d5ca-512" },
+  { title: 'tobi', id: "https://ca.slack-edge.com/T0WU5R8NT-U018CCQ10SG-69508aadc5c4-512" },
   /* 
-  {title: 'steve', id: 5},
-  {title: 'inna', id: 6},
-  {title: 'till', id: 7},
-  {title: 'tobi', id: 8},
   {title: 'no', id: 6},
   {title: 'what', id: 7},
   {title: 'is ', id: 8},
@@ -98,21 +85,21 @@ class App extends React.Component {
     point: new Animated.ValueXY(),
     flightY: new Animated.Value(0),
 
-    currentItem: {title: 'hello', id: 1},
+    currentItem: { title: 'hello', id: 1 },
     draggingIndex: -1,
     hidden: true,
     dragging: false,
     DataTwo: [
-      {title: 'Andrew', id: 1},
-      {title: 'Berta', id: 2},
-      {title: 'leo', id: 3},
-      {title: 'jo cock', id: 4},
-      {title: 'steve', id: 5},
-      {title: 'inna', id: 6},
-      {title: 'till', id: 7},
-      {title: 'tobi', id: 8},
+      { title: 'Andrew', id: 1 },
+      { title: 'Berta', id: 2 },
+      { title: 'leo', id: 3 },
+      { title: 'jo cock', id: 4 },
+      { title: 'steve', id: 5 },
+      { title: 'inna', id: 6 },
+      { title: 'till', id: 7 },
+      { title: 'tobi', id: 8 },
     ],
-    DataThree: [{title: 'Andrew', id: 1}],
+    DataThree: [{ title: 'Andrew', id: 1 }],
   };
 
   _panResponder: PanResponderInstance;
@@ -137,13 +124,13 @@ class App extends React.Component {
 
       onPanResponderGrant: (evt, gestureState) => {
         console.log(this.listItemHeight, 'itemheight');
-        this.setState({hidden: false});
-        this.setState({dragging: true});
+        this.setState({ hidden: false });
+        this.setState({ dragging: true });
         this.currentIndex = this.xToIndex(gestureState.x0);
-        this.setState({draggingIndex: this.currentIndex});
+        this.setState({ draggingIndex: this.currentIndex });
 
         // console.log(this.currentIndex, 'current Index')
-        this.setState({currentItem: this.state.DataTwo[this.currentIndex]});
+        this.setState({ currentItem: this.state.DataTwo[this.currentIndex] });
         // console.log(gestureState.x0, 'Gesture x0 mouse exact')
         // console.log(gestureState.y0, 'Gesture y0 mouse exact')
         // console.log(this.currentIndex, 'current Item')
@@ -156,7 +143,7 @@ class App extends React.Component {
               x: this.state.point.x,
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )({
           y: gestureState.y0 - this.listItemHeight / 2,
 
@@ -175,7 +162,7 @@ class App extends React.Component {
               x: this.state.point.x,
             },
           ],
-          {useNativeDriver: false},
+          { useNativeDriver: false },
         )({
           y: gestureState.moveY - this.listItemHeight / 2,
 
@@ -211,7 +198,7 @@ class App extends React.Component {
         if (this.currentIndex > -1) {
           myArray.splice(this.currentIndex, 1);
         }
-        this.setState({DataTwo: myArray, draggingIndex: -1});
+        this.setState({ DataTwo: myArray, draggingIndex: -1 });
       },
       onPanResponderTerminate: (evt, gestureState) => {
         // Another component has become the responder, so this gesture
@@ -231,9 +218,9 @@ class App extends React.Component {
     );
 
   render() {
-    const {DataTwo, dragging, hidden, draggingIndex} = this.state;
+    const { DataTwo, dragging, hidden, draggingIndex } = this.state;
 
-    const getListItem = ({item}: any, index: number) => (
+    const getListItem = ({ item }: any, index: number) => (
       <View
         onLayout={(e) => {
           this.listItemHeight = e.nativeEvent.layout.height;
@@ -242,15 +229,19 @@ class App extends React.Component {
         {...this._panResponder.panHandlers}
         style={[
           styles.listItemContainerStyle,
-          {opacity: draggingIndex === index ? 0 : 1},
+          { opacity: draggingIndex === index ? 0 : 1 },
         ]}
-        // {...console.log(item.title)}
+      // {...console.log(item.title)}
       >
         <View>
           <Text style={styles.listItemTextStyle}>{item.title}</Text>
         </View>
       </View>
     );
+
+
+
+
 
     return (
       <SafeAreaView>
@@ -263,10 +254,11 @@ class App extends React.Component {
           }}>
           <Grouper>
             <TargetList></TargetList>
-            <View style={{backgroundColor:"black", height: "80%"}}></View>
+            <View style={{ backgroundColor: "black", height: "80%" }}></View>
             <SourceList
               sourceListProp={testDate}
-              horizontal={true}></SourceList>
+              horizontal={true}
+            ></SourceList>
           </Grouper>
 
           {/*  <FlatList
