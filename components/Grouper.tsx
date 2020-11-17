@@ -76,13 +76,13 @@ const TargetList = ({targetListGrouper, sendLocation}) => {
         style={{
           height: 60,
           width: 60,
-          borderRadius: 50,
+          borderRadius: 58,
           backgroundColor: "blue",
           justifyContent: "center",
           alignItems: "center",
           margin: 0,
         }}>
-        <Image style={{width: 50, height: 50, borderRadius:50}} source={{uri: item.id}}></Image>
+        <Image style={{width: 53, height: 53, borderRadius:53}} source={{uri: item.id}}></Image>
       </View>
     )
 
@@ -117,7 +117,6 @@ const SourceList = (props: any) => {
     itemCreate,
   } = props;
 
-  console.log(itemCreate, '---------------------itemCreate');
 
   const [sourceList, setsourceList] = useState(sourceListProp);
   const [targetListLocation, settargetListLocation] = useState(
@@ -199,11 +198,7 @@ const SourceList = (props: any) => {
           x: gestureState.moveX - listItemWidth / 2,
         });
 
-        console.log(evt.nativeEvent.timestamp, 'here');
-        console.log(
-          animatedItemPoint.getLayout().left,
-          'animated layout y release',
-        );
+       
       },
       onPanResponderTerminationRequest: (evt, gestureState) => false,
       onPanResponderRelease: (evt, gestureState) => {
@@ -229,14 +224,12 @@ const SourceList = (props: any) => {
             duration: 500,
             useNativeDriver: false,
           }).start(() => {
-            console.log('animation over------------------');
             sendItems(currentItem);
             sethidden(true);
             counter++;
           });
         });
 
-        console.log('after Animation should get to here');
 
         const newSourceList = sourceList;
         if (currentItemIndex > -1) {
@@ -261,7 +254,6 @@ const SourceList = (props: any) => {
     Math.floor((scrollOffSet + x - flatListLayoutX) / listItemWidth);
 
   const getListItem = (item, index) => {
-    console.log(typeof item.id);
     return (
       <View
         onLayout={(e) => {
@@ -281,7 +273,7 @@ const SourceList = (props: any) => {
           alignItems: "center",
           margin: 0,
         }}>
-        <Image style={{width: 50, height: 50, borderRadius:50}} source={{uri: item.id}}></Image>
+        <Image style={{width: 53, height: 53, borderRadius:53}} source={{uri: item.id}}></Image>
       </View>
     );
   };
