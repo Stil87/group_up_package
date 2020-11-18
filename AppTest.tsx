@@ -1,14 +1,14 @@
 import React from "react";
-import {Image, SafeAreaView, Text, View} from 'react-native';
+import {Image, SafeAreaView, View} from 'react-native';
 import {Grouper, SourceList, TargetList} from './components/Grouper';
 
-const testDate: Array<{}> = [
+const testData: Array<{}> = [
   {
-    title: 'Igor',
+    title: 'Burnie',
     id: 'https://ca.slack-edge.com/T0WU5R8NT-U014XEG2PJ4-bb2847571bc1-512',
   },
   {
-    title: 'Lukas',
+    title: 'Till',
     id: 'https://ca.slack-edge.com/T0WU5R8NT-U015FNL1RQF-87fa8c57d5ca-512',
   },
   {
@@ -22,17 +22,8 @@ const testDate: Array<{}> = [
   {
     title: 'Berta',
     id: 'https://ca.slack-edge.com/T0WU5R8NT-UFCH43E4B-bf2eeac7c0fa-512',
-  },
-  /* 
-  {
-    title: 'till',
-    id: 'https://ca.slack-edge.com/T0WU5R8NT-U015FNL1RQF-87fa8c57d5ca-512',
-  },
-  { title: 'tobi', id: 'https://ca.slack-edge.com/T0WU5R8NT-U018CCQ10SG-69508aadc5c4-512' },
-  {title: 'no', id: 6},
-  {title: 'what', id: 7},
-  {title: 'is ', id: 8},
-  {title: 'here', id: 9}, */
+  }
+
 ];
 
 const APP = () => {
@@ -54,7 +45,7 @@ const APP = () => {
               source={require('./assests/friends.jpg')}
             />
           </View>
-          <SourceList sourceListProp={testDate} horizontal={true}></SourceList>
+          <SourceList sourceListProp={testData} horizontal={true}></SourceList>
         </Grouper>
       </View>
     </SafeAreaView>
